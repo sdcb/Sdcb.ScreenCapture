@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace Sdcb
 {
-    public record LockedFrame
+    public struct LockedFrame
     {
         public IntPtr DataPointer;
 

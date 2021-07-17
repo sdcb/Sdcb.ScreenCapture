@@ -11,7 +11,7 @@ namespace Sdcb
 {
     public static class ScreenCapture
     {
-        public static RawRectangle GetScreenSize(int screenId)
+        private static RawRectangle GetScreenSize(int screenId)
         {
             using var factory = new Dxgi.Factory1();
             using Dxgi.Adapter adapter = factory.GetAdapter1(0);
@@ -46,7 +46,7 @@ namespace Sdcb
             using Dxgi.OutputDuplication duplication = output1.DuplicateOutput(device);
             while (!cancellationToken.IsCancellationRequested)
             {
-                GrabResult frame = duplication.Grab(20);
+                using GrabResult frame = duplication.Grab(20);
                 if (frame != null && frame.Resource != null && !cancellationToken.IsCancellationRequested)
                 {
                     using D3D11.Texture2D currentFrame = new D3D11.Texture2D(device, textureDesc);
@@ -95,7 +95,7 @@ namespace Sdcb
             while (!cancellationToken.IsCancellationRequested)
             {
                 var sw = Stopwatch.StartNew();
-                GrabResult frame = duplication.Grab(Math.Max(1, (int)(frameIntervalMs - 10)));
+                using GrabResult frame = duplication.Grab(Math.Max(1, (int)(frameIntervalMs - 10)));
 
                 if (cancellationToken.IsCancellationRequested) break;
 

@@ -7,11 +7,12 @@
     <Authors>sdcb</Authors>
     <Description>DXGI based screen capture, with no dependency of Bitmap, zero-copy, raw output only.
 Suitable for high performance/real time screen capture/video recording.</Description>
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
     <PackageProjectUrl>https://github.com/sdcb/Sdcb.ScreenCapture</PackageProjectUrl>
     <RepositoryUrl>https://github.com/sdcb/Sdcb.ScreenCapture</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>sdcb</PackageTags>
+    <PackageTags>linqpad-samples dxgi sdcb</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,6 +21,7 @@ Suitable for high performance/real time screen capture/video recording.</Descrip
 
   <ItemGroup>
     <Folder Include="linqpad-samples\" />
+    <None Include="linqpad-samples\*.linq" Pack="True" PackagePath="linqpad-samples" />
   </ItemGroup>
 
 </Project>

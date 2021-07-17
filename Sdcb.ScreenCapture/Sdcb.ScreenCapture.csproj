@@ -8,6 +8,10 @@
     <Description>DXGI based screen capture, with no dependency of Bitmap, zero-copy, raw output only.
 Suitable for high performance/real time screen capture/video recording.</Description>
     <Version>0.1.0</Version>
+    <PackageProjectUrl>https://github.com/sdcb/Sdcb.ScreenCapture</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/sdcb/Sdcb.ScreenCapture</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>sdcb</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

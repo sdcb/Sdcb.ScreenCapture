@@ -18,4 +18,8 @@ Suitable for high performance/real time screen capture/video recording.</Descrip
     <PackageReference Include="SharpDX.Direct3D11" Version="4.2.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="linqpad-samples\" />
+  </ItemGroup>
+
 </Project>

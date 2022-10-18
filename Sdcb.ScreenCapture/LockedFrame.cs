@@ -1,6 +1,6 @@
-﻿using SharpDX;
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
+using Vortice.Direct3D11;
 
 namespace Sdcb
 {
@@ -14,22 +14,20 @@ namespace Sdcb
 
         public const int BytePerPixel = 4;
 
-        public static explicit operator LockedFrame(DataBox box)
+        public static explicit operator LockedFrame(MappedSubresource box)
         {
             return new LockedFrame
             {
                 DataPointer = box.DataPointer, 
-                Length = box.SlicePitch, 
+                Length = box.DepthPitch, 
                 RowPitch = box.RowPitch,  
             };
         }
 
-        public byte[] GetArray()
+        public byte[] ToArray()
         {
             byte[] data = new byte[Length];
-            GCHandle pin = GCHandle.Alloc(data, GCHandleType.Pinned);
-            Utilities.CopyMemory(pin.AddrOfPinnedObject(), DataPointer, Length);
-            pin.Free();
+            Marshal.Copy(DataPointer, data, 0, Length);
             return data;
         }
     }

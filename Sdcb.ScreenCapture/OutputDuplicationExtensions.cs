@@ -1,15 +1,15 @@
-﻿using SharpDX;
-using Dxgi = SharpDX.DXGI;
+﻿using SharpGen.Runtime;
+using Vortice.DXGI;
 
 namespace Sdcb
 {
     internal static class OutputDuplicationExtensions
     {
-        public static GrabResult Grab(this Dxgi.OutputDuplication duplication, int timeoutInMilliseconds = int.MaxValue)
+        public static GrabResult Grab(this IDXGIOutputDuplication duplication, int timeoutInMilliseconds = int.MaxValue)
         {
-            Result result = duplication.TryAcquireNextFrame(timeoutInMilliseconds,
-                out Dxgi.OutputDuplicateFrameInformation frameInfo,
-                out Dxgi.Resource desktopResource);
+            Result result = duplication.AcquireNextFrame(timeoutInMilliseconds,
+                out OutduplFrameInfo frameInfo,
+                out IDXGIResource desktopResource);
             if (result.Failure) return null;
             return new GrabResult(frameInfo, desktopResource);
         }

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -7,7 +7,8 @@
     <Authors>sdcb</Authors>
     <Description>DXGI based screen capture, with no dependency of Bitmap, zero-copy, raw output only.
 Suitable for high performance/real time screen capture/video recording.</Description>
-    <Version>0.1.2</Version>
+    <VersionPrefix>1.0.0</VersionPrefix>
+    <VersionSuffix>preview.1</VersionSuffix>
     <PackageProjectUrl>https://github.com/sdcb/Sdcb.ScreenCapture</PackageProjectUrl>
     <RepositoryUrl>https://github.com/sdcb/Sdcb.ScreenCapture</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -16,12 +17,12 @@ Suitable for high performance/real time screen capture/video recording.</Descrip
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SharpDX.Direct3D11" Version="4.2.0" />
+    <Folder Include="linqpad-samples\" />
+    <None Include="linqpad-samples\*.linq" Pack="True" PackagePath="linqpad-samples" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="linqpad-samples\" />
-    <None Include="linqpad-samples\*.linq" Pack="True" PackagePath="linqpad-samples" />
+    <PackageReference Include="Vortice.Direct3D11" Version="2.1.32" />
   </ItemGroup>
 
 </Project>

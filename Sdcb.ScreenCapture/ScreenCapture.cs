@@ -1,96 +1,103 @@
-﻿using SharpDX;
-using SharpDX.Mathematics.Interop;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
-using D3D11 = SharpDX.Direct3D11;
-using Dxgi = SharpDX.DXGI;
+using Vortice;
+using Vortice.Direct3D11;
+using Vortice.DXGI;
+using Vortice.Mathematics;
 
 namespace Sdcb
 {
     public static class ScreenCapture
     {
-        private static RawRectangle GetScreenSize(int screenId)
+        public static RectI GetScreenSize(int screenId, int adapterId = 0)
         {
-            using var factory = new Dxgi.Factory1();
-            using Dxgi.Adapter adapter = factory.GetAdapter1(0);
-            using Dxgi.Output output = adapter.GetOutput(screenId);
+            using IDXGIFactory1 factory = DXGI.CreateDXGIFactory1<IDXGIFactory1>();
+            factory.EnumAdapters1(adapterId, out IDXGIAdapter1 _adapter).CheckError();
+            using IDXGIAdapter1 adapter = _adapter;
+            adapter.EnumOutputs(screenId, out IDXGIOutput _output);
+            using IDXGIOutput output = _output;
 
-            return output.Description.DesktopBounds;
+            return output.Description.DesktopCoordinates;
         }
 
-        public static IEnumerable<LockedFrame> CaptureScreenFrames(int screenId, CancellationToken cancellationToken = default)
+        public static IEnumerable<LockedFrame> CaptureScreenFrames(int screenId, int adapterId = 0, CancellationToken cancellationToken = default)
         {
-            using var factory = new Dxgi.Factory1();
-            using Dxgi.Adapter adapter = factory.GetAdapter1(0);
-            using var device = new D3D11.Device(adapter);
-            using Dxgi.Output output = adapter.GetOutput(screenId);
-            using Dxgi.Output1 output1 = output.QueryInterface<Dxgi.Output1>();
+            using IDXGIFactory1 factory = DXGI.CreateDXGIFactory1<IDXGIFactory1>();
+            factory.EnumAdapters1(adapterId, out IDXGIAdapter1 _adapter).CheckError();
+            using IDXGIAdapter1 adapter = _adapter;
+            using IDXGIDevice dxDevice = adapter.GetParent<IDXGIDevice>();
+            using ID3D11Device device = D3D11.CreateDirect3D11DeviceFromDXGIDevice<ID3D11Device>(dxDevice);
+            adapter.EnumOutputs(screenId, out IDXGIOutput _output);
+            using IDXGIOutput output = _output;
+            using IDXGIOutput1 output1 = output.QueryInterface<IDXGIOutput1>();
 
-            RawRectangle bounds = output1.Description.DesktopBounds;
-            var textureDesc = new D3D11.Texture2DDescription
+            RawRect bounds = output1.Description.DesktopCoordinates;
+            Texture2DDescription textureDesc = new()
             {
-                CpuAccessFlags = D3D11.CpuAccessFlags.Read,
-                BindFlags = D3D11.BindFlags.None,
-                Format = Dxgi.Format.B8G8R8A8_UNorm,
+                CPUAccessFlags = CpuAccessFlags.Read,
+                BindFlags = BindFlags.None,
+                Format = Format.B8G8R8A8_UNorm,
                 Width = bounds.Right - bounds.Left,
                 Height = bounds.Bottom - bounds.Top,
-                OptionFlags = D3D11.ResourceOptionFlags.None,
+                MiscFlags = ResourceOptionFlags.None,
                 MipLevels = 1,
                 ArraySize = 1,
                 SampleDescription = { Count = 1, Quality = 0 },
-                Usage = D3D11.ResourceUsage.Staging
+                Usage = ResourceUsage.Staging,
             };
-
-            using Dxgi.OutputDuplication duplication = output1.DuplicateOutput(device);
+            using IDXGIOutputDuplication duplication = output1.DuplicateOutput(device);
             while (!cancellationToken.IsCancellationRequested)
             {
                 using GrabResult frame = duplication.Grab(20);
                 if (frame != null && frame.Resource != null && !cancellationToken.IsCancellationRequested)
                 {
-                    using D3D11.Texture2D currentFrame = new D3D11.Texture2D(device, textureDesc);
+                    using ID3D11Texture2D currentFrame = device.CreateTexture2D(textureDesc);
 
-                    using (D3D11.Texture2D rawTexture2d = frame.GetTexture2D())
+                    using (ID3D11Texture2D rawTexture2d = frame.AsTexture2D())
                     {
                         device.ImmediateContext.CopyResource(rawTexture2d, currentFrame);
                     }
-                    DataBox dataBox = device.ImmediateContext.MapSubresource(currentFrame, 0, D3D11.MapMode.Read, D3D11.MapFlags.None);
+                    MappedSubresource dataBox = device.ImmediateContext.Map(currentFrame, 0);
                     yield return (LockedFrame)dataBox;
                     duplication.ReleaseFrame();
                 }
             }
         }
 
-        public static IEnumerable<LockedFrame> CaptureScreenFrames(int screenId, double fps, CancellationToken cancellationToken = default)
+        public static IEnumerable<LockedFrame> CaptureScreenFrames(int screenId, double fps, int adapterId = 0, CancellationToken cancellationToken = default)
         {
             double frameIntervalMs = 1000.0 / fps;
 
-            using var factory = new Dxgi.Factory1();
-            using Dxgi.Adapter adapter = factory.GetAdapter1(0);
-            using var device = new D3D11.Device(adapter);
-            using Dxgi.Output output = adapter.GetOutput(screenId);
-            using Dxgi.Output1 output1 = output.QueryInterface<Dxgi.Output1>();
+            using IDXGIFactory1 factory = DXGI.CreateDXGIFactory1<IDXGIFactory1>();
+            factory.EnumAdapters1(adapterId, out IDXGIAdapter1 _adapter).CheckError();
+            using IDXGIAdapter1 adapter = _adapter;
+            using IDXGIDevice dxDevice = adapter.GetParent<IDXGIDevice>();
+            using ID3D11Device device = D3D11.CreateDirect3D11DeviceFromDXGIDevice<ID3D11Device>(dxDevice);
+            adapter.EnumOutputs(screenId, out IDXGIOutput _output);
+            using IDXGIOutput output = _output;
+            using IDXGIOutput1 output1 = output.QueryInterface<IDXGIOutput1>();
 
-            RawRectangle bounds = output1.Description.DesktopBounds;
-            var textureDesc = new D3D11.Texture2DDescription
+            RawRect bounds = output1.Description.DesktopCoordinates;
+            Texture2DDescription textureDesc = new ()
             {
-                CpuAccessFlags = D3D11.CpuAccessFlags.Read,
-                BindFlags = D3D11.BindFlags.None,
-                Format = Dxgi.Format.B8G8R8A8_UNorm,
+                CPUAccessFlags = CpuAccessFlags.Read,
+                BindFlags = BindFlags.None,
+                Format = Format.B8G8R8A8_UNorm,
                 Width = bounds.Right - bounds.Left,
                 Height = bounds.Bottom - bounds.Top,
-                OptionFlags = D3D11.ResourceOptionFlags.None,
+                MiscFlags = ResourceOptionFlags.None,
                 MipLevels = 1,
                 ArraySize = 1,
                 SampleDescription = { Count = 1, Quality = 0 },
-                Usage = D3D11.ResourceUsage.Staging
+                Usage = ResourceUsage.Staging, 
             };
 
-            using Dxgi.OutputDuplication duplication = output1.DuplicateOutput(device);
+            using IDXGIOutputDuplication duplication = output1.DuplicateOutput(device);
 
-            D3D11.Texture2D lastFrame = default;
-            DataBox lastDataBox = default;
+            ID3D11Texture2D lastFrame = default;
+            MappedSubresource lastDataBox = default;
             double sleepFlag = 0;
             while (!cancellationToken.IsCancellationRequested)
             {
@@ -101,13 +108,13 @@ namespace Sdcb
 
                 if (frame != null && frame.Resource != null)
                 {
-                    D3D11.Texture2D currentFrame = new D3D11.Texture2D(device, textureDesc);
+                    ID3D11Texture2D currentFrame = device.CreateTexture2D(textureDesc);
 
-                    using (D3D11.Texture2D rawTexture2d = frame.GetTexture2D())
+                    using (ID3D11Texture2D rawTexture2d = frame.AsTexture2D())
                     {
                         device.ImmediateContext.CopyResource(rawTexture2d, currentFrame);
                     }
-                    DataBox dataBox = device.ImmediateContext.MapSubresource(currentFrame, 0, D3D11.MapMode.Read, D3D11.MapFlags.None);
+                    MappedSubresource dataBox = device.ImmediateContext.Map(currentFrame, 0);
                     yield return (LockedFrame)dataBox;
                     duplication.ReleaseFrame();
 

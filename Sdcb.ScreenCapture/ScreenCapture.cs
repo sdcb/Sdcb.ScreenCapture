@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using Vortice;
+using Vortice.Direct3D;
 using Vortice.Direct3D11;
 using Vortice.DXGI;
 using Vortice.Mathematics;
@@ -27,8 +28,8 @@ namespace Sdcb
             using IDXGIFactory1 factory = DXGI.CreateDXGIFactory1<IDXGIFactory1>();
             factory.EnumAdapters1(adapterId, out IDXGIAdapter1 _adapter).CheckError();
             using IDXGIAdapter1 adapter = _adapter;
-            using IDXGIDevice dxDevice = adapter.GetParent<IDXGIDevice>();
-            using ID3D11Device device = D3D11.CreateDirect3D11DeviceFromDXGIDevice<ID3D11Device>(dxDevice);
+            D3D11.D3D11CreateDevice(adapter, DriverType.Unknown, DeviceCreationFlags.None, new[] { FeatureLevel.Level_11_1, FeatureLevel.Level_11_0 }, out ID3D11Device _device).CheckError();
+            using ID3D11Device device = _device;
             adapter.EnumOutputs(screenId, out IDXGIOutput _output);
             using IDXGIOutput output = _output;
             using IDXGIOutput1 output1 = output.QueryInterface<IDXGIOutput1>();
@@ -73,14 +74,14 @@ namespace Sdcb
             using IDXGIFactory1 factory = DXGI.CreateDXGIFactory1<IDXGIFactory1>();
             factory.EnumAdapters1(adapterId, out IDXGIAdapter1 _adapter).CheckError();
             using IDXGIAdapter1 adapter = _adapter;
-            using IDXGIDevice dxDevice = adapter.GetParent<IDXGIDevice>();
-            using ID3D11Device device = D3D11.CreateDirect3D11DeviceFromDXGIDevice<ID3D11Device>(dxDevice);
+            D3D11.D3D11CreateDevice(adapter, DriverType.Unknown, DeviceCreationFlags.None, new[] { FeatureLevel.Level_11_1, FeatureLevel.Level_11_0 }, out ID3D11Device _device).CheckError();
+            using ID3D11Device device = _device;
             adapter.EnumOutputs(screenId, out IDXGIOutput _output);
             using IDXGIOutput output = _output;
             using IDXGIOutput1 output1 = output.QueryInterface<IDXGIOutput1>();
 
             RawRect bounds = output1.Description.DesktopCoordinates;
-            Texture2DDescription textureDesc = new ()
+            Texture2DDescription textureDesc = new()
             {
                 CPUAccessFlags = CpuAccessFlags.Read,
                 BindFlags = BindFlags.None,
@@ -91,7 +92,7 @@ namespace Sdcb
                 MipLevels = 1,
                 ArraySize = 1,
                 SampleDescription = { Count = 1, Quality = 0 },
-                Usage = ResourceUsage.Staging, 
+                Usage = ResourceUsage.Staging,
             };
 
             using IDXGIOutputDuplication duplication = output1.DuplicateOutput(device);

@@ -22,7 +22,7 @@ namespace Sdcb
             return output.Description.DesktopCoordinates;
         }
 
-        public static IEnumerable<LockedBgraFrame> CaptureScreenFrames(int screenId, int adapterId = 0, CancellationToken cancellationToken = default)
+        public static IEnumerable<LockedBgraFrame> CaptureScreenFrames(int screenId, int adapterId = 0, int timeoutMs = 20, CancellationToken cancellationToken = default)
         {
             using IDXGIFactory1 factory = DXGI.CreateDXGIFactory1<IDXGIFactory1>();
             factory.EnumAdapters1(adapterId, out IDXGIAdapter1 _adapter).CheckError();
@@ -50,7 +50,7 @@ namespace Sdcb
             using IDXGIOutputDuplication duplication = output1.DuplicateOutput(device);
             while (!cancellationToken.IsCancellationRequested)
             {
-                using GrabResult? frame = duplication.Grab(20);
+                using GrabResult? frame = duplication.Grab(timeoutMs);
                 if (frame != null && frame.Resource != null && !cancellationToken.IsCancellationRequested)
                 {
                     using ID3D11Texture2D currentFrame = device.CreateTexture2D(textureDesc);

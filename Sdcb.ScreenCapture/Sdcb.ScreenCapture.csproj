@@ -2,18 +2,19 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <LangVersion>9.0</LangVersion>
+    <LangVersion>10.0</LangVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>sdcb</Authors>
     <Description>DXGI based screen capture, with no dependency of Bitmap, zero-copy, raw output only.
 Suitable for high performance/real time screen capture/video recording.</Description>
     <VersionPrefix>1.0.0</VersionPrefix>
-    <VersionSuffix>preview.3</VersionSuffix>
+    <VersionSuffix>preview.7</VersionSuffix>
     <PackageProjectUrl>https://github.com/sdcb/Sdcb.ScreenCapture</PackageProjectUrl>
     <RepositoryUrl>https://github.com/sdcb/Sdcb.ScreenCapture</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>sdcb</PackageTags>
     <PackageTags>linqpad-samples dxgi sdcb</PackageTags>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

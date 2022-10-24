@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -8,7 +8,6 @@
     <Description>DXGI based screen capture, with no dependency of Bitmap, zero-copy, raw output only.
 Suitable for high performance/real time screen capture/video recording.</Description>
     <VersionPrefix>1.0.0</VersionPrefix>
-    <VersionSuffix>preview.7</VersionSuffix>
     <PackageProjectUrl>https://github.com/sdcb/Sdcb.ScreenCapture</PackageProjectUrl>
     <RepositoryUrl>https://github.com/sdcb/Sdcb.ScreenCapture</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
